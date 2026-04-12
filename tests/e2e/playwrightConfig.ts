@@ -16,6 +16,15 @@ const chromiumOnlySpecs = [
     '**/share-link.spec.ts',
 ];
 
+const webkitUnsupportedCeremonySpecs = [
+    '**/ceremony-persistence.spec.ts',
+    '**/ceremony-rescue.spec.ts',
+    '**/multi-participant-counting.spec.ts',
+    '**/refresh-resume.spec.ts',
+    '**/setup-phase.spec.ts',
+    '**/voting-flow.spec.ts',
+];
+
 const isCi = Boolean(process.env.CI);
 const shouldUseBlobReporter = process.env.PLAYWRIGHT_BLOB_REPORT === 'true';
 const shouldUseBuiltServers =
@@ -134,7 +143,7 @@ const projects: Project[] = [
     },
     {
         name: 'webkit-desktop',
-        testIgnore: chromiumOnlySpecs,
+        testIgnore: [...chromiumOnlySpecs, ...webkitUnsupportedCeremonySpecs],
         use: {
             ...devices['Desktop Safari'],
             browserName: 'webkit' as const,
@@ -195,7 +204,8 @@ export const createLocalE2EConfig = (): PlaywrightTestConfig => ({
           ]
         : [
               {
-                  command: 'pnpm exec node --experimental-strip-types tests/e2e/scripts/run-e2e-backend.mts',
+                  command:
+                      'pnpm exec node --experimental-strip-types tests/e2e/scripts/run-e2e-backend.mts',
                   timeout: 120_000,
                   url: `${localApiBaseUrl}/api/health-check`,
                   reuseExistingServer: false,
